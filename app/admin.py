@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from app.models.usuario import Usuario
 from app.forms import UsuarioCreationForm, UsuarioChangeForm
 from app.models import Apartamento, Residencia
+from app.models import Reserva, DetalleReserva, AreaComun
 
 # Inline para ver estancias (historial de ocupación) en el detalle del Usuario:
 
@@ -59,3 +60,25 @@ class ResidenciaAdmin(admin.ModelAdmin):
     list_display = ('id', 'usuario', 'apartamento', 'fecha_inicio', 'fecha_fin', 'created_at')
     list_filter = ('fecha_fin',)
     search_fields = ('usuario__email', 'apartamento__numero')
+    
+
+
+
+
+## MODELOS DE DETALLE RESERVA, AREA COMUN, RESERVA
+@admin.register(Reserva)
+class ReservaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'usuario', 'area_comun', 'fecha', 'hora_inicio', 'hora_fin', 'estado', 'fecha_creacion')
+    list_filter = ('estado',)
+    search_fields = ('usuario__email', 'area_comun__nombre')
+@admin.register(DetalleReserva)
+class DetalleReservaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'reserva', 'descripcion')
+    search_fields = ('reserva__usuario__email', 'reserva__area_comun__nombre')
+@admin.register(AreaComun)
+class AreaComunAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nombre') 
+    list_filter = ('estado',)
+    search_fields = ('nombre',)
+
+    

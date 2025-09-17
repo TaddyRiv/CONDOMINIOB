@@ -155,3 +155,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+
+
+####################
+#por ver para el formato de hora
+# Django (formularios/admin)
+#TIME_INPUT_FORMATS = ["%H:%M"]
+
+# DRF (serialización)
+#REST_FRAMEWORK = {
+    # ...
+ #   "TIME_FORMAT": "%H:%M",
+#}

@@ -3,9 +3,9 @@ from .propiedad import *
 from .residencia import *
 from .residente import *
 from .apartamento import *
-from .visita import *
-from .visitante import *
-
+from .reserva import *
+from .area_comun import *
+from .detalle_reserva import *
 
 
 __all__ = (
@@ -19,8 +19,5 @@ __all__ = (
     'ApartamentoSerializer',
     'PropietarioSerializer',
     'ResidenciaAsignarSerializer',
-    'VehiculoSerializer',
-    'VisitanteSerializer',
-    'VisitaSerializer',
 )  
 #Cambios aplicados#

@@ -1,4 +1,5 @@
 # app/urls.py
+
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 from app.views.auth import EmailOrUsernameTokenObtainPairView
@@ -15,8 +16,11 @@ from app.views.residente_usuario import ResidenteListView
 from app.views.servicio import ServicioViewSet
 from app.views.cargo import CargoViewSet
 from app.views.pago import PagoViewSet
-from app.views.vehiculo import VehiculoViewSet
-from app.views.visita import VisitaViewSet
+
+from app.views.reserva import ReservaViewSet
+from app.views.area_comun import AreaComunViewSet
+from app.views.detalle_reserva import DetalleReservaViewSet
+
 
 urlpatterns = [
 
@@ -37,7 +41,11 @@ urlpatterns = [
     path("servicios/", ServicioViewSet.as_view({'get': 'list', 'post': 'create'}), name="servicio-list"),
     path("cargos/", CargoViewSet.as_view({'get': 'list', 'post': 'create'}), name="cargo-list"),
     path("pagos/", PagoViewSet.as_view({'get': 'list', 'post': 'create'}), name="pago-list"),
-    path("vehiculos/", VehiculoViewSet.as_view({'get': 'list', 'post': 'create'}), name="vehiculo-list"),   
-    path("visitas/", VisitaViewSet.as_view({'get': 'list', 'post': 'create'}), name="visita-list"),
-    path("visitas/registrar/", VisitaViewSet.as_view({'post': 'registrar'}), name="visita-registrar"),
+    
+    path("reservas/", ReservaViewSet.as_view({'get': 'list', 'post': 'create'}), name="reserva-list"),
+    path("areas-comunes/", AreaComunViewSet.as_view({'get': 'list', 'post': 'create'}), name="areacomun-list"),
+    path("detalles-reserva/", DetalleReservaViewSet.as_view({'get': 'list', 'post': 'create'}), name="detalle-reserva-list"),
+
+    
+
 ]
