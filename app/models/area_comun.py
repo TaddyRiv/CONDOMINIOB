@@ -1,6 +1,7 @@
 from django.db import models
 
 #AREA_COMUN
+
 class AreaComun(models.Model):
     nombre = models.CharField(max_length=80, unique=True)
     estado = models.CharField(max_length=20, default="ACTIVO")  # ACTIVO/INACTIVO

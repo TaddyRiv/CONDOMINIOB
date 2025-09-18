@@ -1,6 +1,7 @@
 from django.db import models
 
 #DETALLE_RESERVA
+
 class DetalleReserva(models.Model):
     reserva = models.ForeignKey(
         "app.Reserva", on_delete=models.CASCADE, related_name="detalles"

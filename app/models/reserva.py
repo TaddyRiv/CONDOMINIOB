@@ -33,7 +33,7 @@ class Reserva(models.Model):
             models.Index(fields=["estado"]),
         ]
 
-    def clean(self):
+    def clean(self): # validar solapamientos y estado area
         # Solo validar si ambos campos existen
         if not self.hora_inicio or not self.hora_fin:
             return

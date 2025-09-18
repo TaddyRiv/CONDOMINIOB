@@ -7,7 +7,7 @@ from rest_framework import serializers
 from app.models.reserva import Reserva
 
 
-#-- permitimos formato de horario 
+#-- permitimos formato de horario solo horas y minutos
 
 class TimeHMField(serializers.TimeField):
     """
