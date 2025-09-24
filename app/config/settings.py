@@ -157,7 +157,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-####################
+#########
 #por ver para el formato de hora
 # Django (formularios/admin)
 #TIME_INPUT_FORMATS = ["%H:%M"]
