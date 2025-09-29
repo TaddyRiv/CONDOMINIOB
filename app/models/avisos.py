@@ -14,3 +14,4 @@ class Aviso(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.propietario.nombre}"
+#cambios noel
