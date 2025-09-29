@@ -2,6 +2,7 @@ from django.db import models
 from app.models.usuario import Usuario
 from app.models.vehiculo import Vehiculo
 
+
 class PuntoAcceso(models.Model):
     nombre = models.CharField(max_length=100)
     ubicacion = models.CharField(max_length=200, blank=True, null=True)
@@ -41,6 +42,10 @@ class Reconocimiento(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     camara = models.ForeignKey(Camara, on_delete=models.CASCADE, related_name="reconocimientos")
 
+    # Integración con AWS Rekognition
+    aws_face_id = models.CharField(max_length=200, blank=True, null=True)  # ID único de la colección
+    confianza = models.FloatField(blank=True, null=True)  # porcentaje de similitud
+
     class Meta:
         db_table = "reconocimientos"
 
@@ -59,6 +64,9 @@ class IntentoAcceso(models.Model):
     )
     vehiculo = models.ForeignKey(
         Vehiculo, on_delete=models.SET_NULL, null=True, blank=True, related_name="intentos_acceso"
+    )
+    punto_acceso = models.ForeignKey(  # 🔹 agregado
+        PuntoAcceso, on_delete=models.CASCADE, related_name="intentos"
     )
     resultado = models.CharField(max_length=10, choices=RESULTADOS)
     motivo = models.CharField(max_length=255, blank=True, null=True)

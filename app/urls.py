@@ -23,13 +23,11 @@ from app.views.reserva import ReservaViewSet
 from app.views.area_comun import AreaComunViewSet
 from app.views.detalle_reserva import DetalleReservaViewSet
 from app.views.pago import PagoViewSet
-from app.views.acceso import (
-    PuntoAccesoViewSet, CamaraViewSet,
-    ReconocimientoViewSet, IntentoAccesoViewSet,
-    EntradaSalidaViewSet
-)
 from app.views.reconocimiento_ia import ReconocerIAView
-
+from app.views.rekognition_view import VerificarAccesoView, RegistrarRostroUsuario
+from app.views.rekognition_view import SincronizarUsuariosView
+from app.views.rekognition_view import ListarCamarasView
+from app.views.entrada_salida import EntradaSalidaViewSet
 
 urlpatterns = [
 
@@ -72,16 +70,12 @@ urlpatterns = [
     path("pagos/<int:pk>/aprobar/", PagoViewSet.as_view({"post": "aprobar"}), name="pago-aprobar"),
     path("pagos/<int:pk>/rechazar/", PagoViewSet.as_view({"post": "rechazar"}), name="pago-rechazar"),
     #url de la camara
-    path("puntos-acceso/", PuntoAccesoViewSet.as_view({"get": "list", "post": "create"}), name="puntosacceso-list"),
-    path("puntos-acceso/<int:pk>/", PuntoAccesoViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="puntosacceso-detail"),
-    path("camaras/", CamaraViewSet.as_view({"get": "list", "post": "create"}), name="camara-list"),
-    path("camaras/<int:pk>/", CamaraViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="camara-detail"),
-    path("reconocimientos/", ReconocimientoViewSet.as_view({"get": "list", "post": "create"}), name="reconocimiento-list"),
-    path("reconocimientos/<int:pk>/", ReconocimientoViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="reconocimiento-detail"),
-    path("reconocimientos/procesar/", ReconocimientoViewSet.as_view({"post": "procesar"}), name="reconocimiento-procesar"),
-    path("intentos/", IntentoAccesoViewSet.as_view({"get": "list", "post": "create"}), name="intento-list"),
-    path("intentos/<int:pk>/", IntentoAccesoViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="intento-detail"),
-    path("entradas-salidas/", EntradaSalidaViewSet.as_view({"get": "list", "post": "create"}), name="entradasalida-list"),
-    path("entradas-salidas/<int:pk>/", EntradaSalidaViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="entradasalida-detail"),
-    path("reconocer-ia/", ReconocerIAView.as_view(), name="reconocer-ia"),
+    path("rekognition/verificar-acceso/", VerificarAccesoView.as_view(), name="rekognition-verificar-acceso"),
+    path("rekognition/registrar-rostro/<int:usuario_id>/", RegistrarRostroUsuario.as_view(), name="rekognition-registrar-rostro"),
+    path("rekognition/verificar/", VerificarAccesoView.as_view(), name="rekognition-verificar"),
+    path("rekognition/sincronizar-usuarios/", SincronizarUsuariosView.as_view(), name="rekognition-sincronizar"),
+    path("rekognition/camaras/", ListarCamarasView.as_view(), name="rekognition-camaras"),
+    path("entradas-salidas/", EntradaSalidaViewSet.as_view({'get': 'list'}), name="entradas-salidas-list"),
+
+    
 ]

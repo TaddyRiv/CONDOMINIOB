@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import environ
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent 
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     "app",
     "rest_framework",
     "corsheaders",
+    "storages",
 ]
 
 REST_FRAMEWORK = {
@@ -78,6 +82,13 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 ROOT_URLCONF = 'app.config.urls'
+
+# Configuración AWS
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_REGION_NAME = env("AWS_REGION")  # us-east-2
+
+
 
 TEMPLATES = [
     {

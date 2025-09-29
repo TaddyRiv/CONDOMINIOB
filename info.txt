@@ -15,6 +15,12 @@ pip freeze > requirements.txt
 instalar requerimientos
 pip install -r requirements.txt
 
+seed
+python manage.py seed_condominio
+python manage.py seed_cargos_pagos
+python manage.py seed_visitas
+python scripts/test_rekognition.py
+
 
 ##noel
 instalacion de django para correr un proyecto en local

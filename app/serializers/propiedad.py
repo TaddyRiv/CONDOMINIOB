@@ -5,6 +5,7 @@ from app.models.apartamento import Apartamento
 from app.models.residencia import Residencia
 from django.utils import timezone
 from django.db import transaction
+from app.serializers.usuario import Base64ImageField
 
 
 class UsuarioResidenteCreateSerializer(serializers.ModelSerializer):
@@ -41,15 +42,35 @@ class UsuarioResidenteCreateSerializer(serializers.ModelSerializer):
         return user
 
     def to_representation(self, instance):
-        return {
-            "id": instance.id,
-            "nombre": instance.nombre,
-            "ci": instance.ci,
-            "correo": instance.email,
-            "telefono": instance.telefono,
-            "rol": instance.rol,
-            "fecha_nacimiento": instance.fecha_nacimiento.isoformat() if instance.fecha_nacimiento else None
+     propiedad = instance["propiedad"]
+     residencia = instance["residencia"]
+     data = {
+        "propiedad": {
+            "id": propiedad.id,
+            "usuario": {
+                "id": propiedad.usuario.id,
+                "nombre": getattr(propiedad.usuario, 'nombre', None),
+                "email": propiedad.usuario.email,
+                "rol": getattr(propiedad.usuario, 'rol', None),
+                "foto": f"data:image/jpeg;base64,{propiedad.usuario.foto}" if propiedad.usuario.foto else None  # 👈 añadido
+            },
+            "apartamento": {
+                "id": propiedad.apartamento.id,
+                "numero": propiedad.apartamento.numero,
+                "bloque": propiedad.apartamento.bloque,
+                "estado": propiedad.apartamento.estado,
+            },
+            "fecha_inicio": propiedad.fecha_inicio.isoformat(),
+            "fecha_fin": propiedad.fecha_fin.isoformat() if propiedad.fecha_fin else None
         }
+    }
+     if residencia:
+        data["residencia"] = {
+            "id": residencia.id,
+            "fecha_inicio": residencia.fecha_inicio.isoformat(),
+            "fecha_fin": residencia.fecha_fin.isoformat() if residencia.fecha_fin else None
+        }
+     return data
         
 class PropiedadAsignarSerializer(serializers.Serializer):
     
@@ -174,10 +195,11 @@ class PropiedadAsignarSerializer(serializers.Serializer):
 class UsuarioPropietarioCreateSerializer(serializers.ModelSerializer):
     correo = serializers.EmailField(source='email')
     password = serializers.CharField(write_only=True, required=False)  # default "123"
+    foto = Base64ImageField(required=False, allow_null=True)  # 👈 añadido
 
     class Meta:
         model = Usuario
-        fields = ('id', 'nombre', 'ci', 'correo', 'telefono', 'password', 'fecha_nacimiento', 'rol')
+        fields = ('id', 'nombre', 'ci', 'correo', 'telefono', 'password', 'fecha_nacimiento', 'rol', 'foto')
         read_only_fields = ('id', 'rol')
 
     def validate(self, attrs):
@@ -193,7 +215,7 @@ class UsuarioPropietarioCreateSerializer(serializers.ModelSerializer):
         raw_password = validated_data.pop('password', '123')
         if not validated_data.get('username'):
             validated_data['username'] = validated_data['email']
-        validated_data['rol'] = getattr(Usuario.Roles, 'DUEÑO', 'DUEÑO')  # o "PROPIETARIO" si así lo nombras
+        validated_data['rol'] = getattr(Usuario.Roles, 'DUEÑO', 'DUEÑO')
 
         user = Usuario(**validated_data)
         user.set_password(raw_password)
@@ -209,5 +231,6 @@ class UsuarioPropietarioCreateSerializer(serializers.ModelSerializer):
             "correo": instance.email,
             "telefono": instance.telefono,
             "rol": instance.rol,
-            "fecha_nacimiento": instance.fecha_nacimiento.isoformat() if instance.fecha_nacimiento else None
+            "fecha_nacimiento": instance.fecha_nacimiento.isoformat() if instance.fecha_nacimiento else None,
+            "foto": f"data:image/jpeg;base64,{instance.foto}" if instance.foto else None  # 👈 añadido
         }

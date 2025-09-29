@@ -12,4 +12,5 @@ from .visita import *
 from .reserva import *
 from .area_comun import *
 from .detalle_reserva import *
+from .acceso import *
 
