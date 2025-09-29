@@ -34,6 +34,9 @@ py -3.11 -m venv .venv
 //Activamos el entorno virtual de python
 .venv\Scripts\activate
 
+sirve para actualizar el pip
+python.exe -m pip install --upgrade pip
+
 Instalacionde  dependencias  librerias y paquetes
 pip install -r requirements.txt
 
@@ -69,3 +72,16 @@ DB_PORT=5432
 
 crear un archivo
 .env
+
+
+
+
+
+
+
+BASE DE DATOS ONLINE CON NEON PARA HACER PRUEBAS 
+# DB_NAME=neondb
+# DB_USER=neondb_owner
+# DB_PASSWORD=npg_Of5U1rhXoqJY
+# DB_HOST=ep-proud-pine-adzcjqit-pooler.c-2.us-east-1.aws.neon.tech
+# DB_PORT=5432

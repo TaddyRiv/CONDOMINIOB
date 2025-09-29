@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import environ
 import os
@@ -34,8 +34,9 @@ SECRET_KEY = 'django-insecure-w7at5urp7r4z5d+jy5-ki^ra=%tivuwpb^&3=wne_46=$!7lk1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2']
+ALLOWED_HOSTS = ['*']
 
+##['127.0.0.1', 'localhost', '10.0.2.2']
 
 # Application definition
 
@@ -60,6 +61,8 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
+      "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",), 
 }
 
@@ -124,6 +127,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": env("DB_NAME"),
+        
+        
         "USER": env("DB_USER"),
         "PASSWORD": env("DB_PASSWORD"),
         "HOST": env("DB_HOST"),      # "localhost" o "127.0.0.1"
@@ -178,7 +183,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-####################
+#########
 #por ver para el formato de hora
 # Django (formularios/admin)
 #TIME_INPUT_FORMATS = ["%H:%M"]

@@ -22,7 +22,7 @@ class MeView(APIView):
         }
         return Response(data)
 
-##
+
 ##@api_view(["GET"])
 ##@permission_classes([IsAuthenticated])
 ##def me_view(request):

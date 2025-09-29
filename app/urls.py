@@ -30,8 +30,13 @@ from app.views.rekognition_view import ListarCamarasView
 from app.views.entrada_salida import EntradaSalidaViewSet
 from app.views.rekognition_view import VerificarPlacaView
 
+from app.views.avisos import AvisoViewSet
+
+
 urlpatterns = [
 
+
+    # Rutas legacy para login personalizado
     path("auth/login/", EmailOrUsernameTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/verify/", TokenVerifyView.as_view(), name="token_verify"),
@@ -70,6 +75,10 @@ urlpatterns = [
     path("pagos/<int:pk>/", PagoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name="pago-detail"),
     path("pagos/<int:pk>/aprobar/", PagoViewSet.as_view({"post": "aprobar"}), name="pago-aprobar"),
     path("pagos/<int:pk>/rechazar/", PagoViewSet.as_view({"post": "rechazar"}), name="pago-rechazar"),
+
+    # Avisos: listar/crear y detalle/actualizar/eliminar
+    path("avisos/",AvisoViewSet.as_view({"get": "list", "post": "create"}),name="aviso-list",),
+    path("avisos/<int:pk>/",AvisoViewSet.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),name="aviso-detail",),
     #url de la camara
     path("rekognition/verificar-acceso/", VerificarAccesoView.as_view(), name="rekognition-verificar-acceso"),
     path("rekognition/registrar-rostro/<int:usuario_id>/", RegistrarRostroUsuario.as_view(), name="rekognition-registrar-rostro"),
@@ -79,5 +88,5 @@ urlpatterns = [
     path("entradas-salidas/", EntradaSalidaViewSet.as_view({'get': 'list'}), name="entradas-salidas-list"),
     path("rekognition/verificar-placa/", VerificarPlacaView.as_view(), name="rekognition-verificar-placa"),
 
-    
+
 ]
