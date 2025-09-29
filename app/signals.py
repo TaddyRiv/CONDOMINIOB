@@ -22,3 +22,5 @@ def registrar_usuario_en_aws(sender, instance, created, **kwargs):
             print(f"[AWS] Usuario {instance.id} registrado en Rekognition con FaceId: {face_id}")
         except Exception as e:
             print(f"[AWS ERROR] No se pudo registrar usuario {instance.id}: {e}")
+
+            #noel se la come
