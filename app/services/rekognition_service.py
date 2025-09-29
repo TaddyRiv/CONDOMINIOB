@@ -1,7 +1,10 @@
 import base64
 import boto3
+from django.db.models import Q
 from django.conf import settings
 from app.models.usuario import Usuario
+from app.models.vehiculo import Vehiculo
+from rest_framework.response import Response
 
 rekognition = boto3.client(
     "rekognition",
@@ -64,3 +67,72 @@ def verificar_usuario_por_foto(base64_image: str):
         return usuario, similarity
     except Usuario.DoesNotExist:
         return None, similarity
+
+def detectar_placa(base64_image: str):
+    """
+    Usa Rekognition para detectar texto (placa) en la imagen.
+    """
+    image_bytes = base64.b64decode(base64_image)
+
+    response = rekognition.detect_text(Image={"Bytes": image_bytes})
+    textos = response.get("TextDetections", [])
+
+    posibles = []
+    for t in textos:
+        if t["Type"] == "LINE":  # líneas completas de texto
+            posibles.append(t["DetectedText"])
+
+    return posibles
+
+
+def verificar_placa_en_bd(base64_image: str):
+    """
+    Detecta la placa en la imagen y verifica si existe en la BD.
+    """
+    posibles = detectar_placa(base64_image)
+
+    for placa in posibles:
+        # Normalizamos (quitar espacios, mayúsculas)
+        placa_norm = placa.replace(" ", "").upper()
+
+        try:
+            vehiculo = Vehiculo.objects.get(placa__iexact=placa_norm)
+            return vehiculo, placa_norm
+        except Vehiculo.DoesNotExist:
+            continue
+
+    return None, posibles
+
+def rekognition_verificar_placa(request):
+    foto_base64 = request.data.get("foto")
+    tipo = request.data.get("tipo", "ENTRADA")
+
+    # 👇 Detectar texto con Rekognition
+    image_bytes = base64.b64decode(foto_base64)
+    response = rekognition.detect_text(Image={"Bytes": image_bytes})
+
+    posibles = [d["DetectedText"].strip().upper()
+                for d in response["TextDetections"]
+                if d["Type"] == "WORD"]
+
+    print("Posibles detectados:", posibles)
+
+    # 👇 Buscar cualquiera de los detectados en BD
+    vehiculo = Vehiculo.objects.filter(
+        placa__in=posibles
+    ).first()
+
+    if vehiculo:
+        return Response({
+            "mensaje": "Acceso permitido",
+            "vehiculo": {
+                "id": vehiculo.id,
+                "placa": vehiculo.placa,
+                "apartamento": vehiculo.apartamento.numero if vehiculo.apartamento else None
+            }
+        })
+    else:
+        return Response({
+            "mensaje": "Acceso denegado",
+            "posibles_detectados": posibles
+        }, status=403)

@@ -6,6 +6,7 @@ from app.services.rekognition_service import verificar_usuario_por_foto
 from app.services.rekognition_service import registrar_usuario_en_rekognition
 from app.models.usuario import Usuario
 from app.models.acceso import Camara, Reconocimiento, IntentoAcceso, EntradaSalida
+from app.services.rekognition_service import verificar_placa_en_bd
 
 class VerificarAccesoView(APIView):
     """
@@ -36,18 +37,19 @@ class VerificarAccesoView(APIView):
 
             # 3️⃣ Guardar IntentoAcceso
             intento = IntentoAcceso.objects.create(
-                reconocimiento=reconocimiento,
-                usuario=usuario if usuario else None,
-                punto_acceso=camara.punto_acceso,
-                resultado="ACEPTADO" if usuario else "DENEGADO",
-                motivo=None if usuario else "No reconocido"
-            )
+    reconocimiento=reconocimiento,
+    usuario=usuario if usuario else None,
+    punto_acceso=camara.punto_acceso,
+    resultado="ACEPTADO" if usuario else "DENEGADO",
+    motivo=None if usuario else "No reconocido"
+)
 
             # 4️⃣ Guardar Entrada/Salida
-            EntradaSalida.objects.create(
-                intento=intento,
-                tipo=tipo
-            )
+            if intento.usuario:
+                 EntradaSalida.objects.create(
+        intento=intento,
+        tipo=tipo
+)
 
             # 5️⃣ Respuesta al cliente
             if usuario:
@@ -137,3 +139,30 @@ class ListarCamarasView(APIView):
             for c in camaras
         ]
         return Response(data)
+    
+class VerificarPlacaView(APIView):
+    """
+    Endpoint para verificar acceso de un vehículo mediante foto de su placa.
+    """
+
+    def post(self, request):
+        foto = request.data.get("foto")
+        if not foto:
+            return Response({"error": "Se requiere foto en base64"}, status=status.HTTP_400_BAD_REQUEST)
+
+        vehiculo, posibles = verificar_placa_en_bd(foto)
+
+        if vehiculo:
+            return Response({
+                "mensaje": "Acceso permitido",
+                "vehiculo": {
+                    "id": vehiculo.id,
+                    "placa": vehiculo.placa,
+                    "apartamento": vehiculo.apartamento.numero if vehiculo.apartamento else None,
+                }
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "mensaje": "Acceso denegado",
+            "posibles_detectados": posibles
+        }, status=status.HTTP_403_FORBIDDEN)

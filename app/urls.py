@@ -28,6 +28,7 @@ from app.views.rekognition_view import VerificarAccesoView, RegistrarRostroUsuar
 from app.views.rekognition_view import SincronizarUsuariosView
 from app.views.rekognition_view import ListarCamarasView
 from app.views.entrada_salida import EntradaSalidaViewSet
+from app.views.rekognition_view import VerificarPlacaView
 
 urlpatterns = [
 
@@ -76,6 +77,7 @@ urlpatterns = [
     path("rekognition/sincronizar-usuarios/", SincronizarUsuariosView.as_view(), name="rekognition-sincronizar"),
     path("rekognition/camaras/", ListarCamarasView.as_view(), name="rekognition-camaras"),
     path("entradas-salidas/", EntradaSalidaViewSet.as_view({'get': 'list'}), name="entradas-salidas-list"),
+    path("rekognition/verificar-placa/", VerificarPlacaView.as_view(), name="rekognition-verificar-placa"),
 
     
 ]
