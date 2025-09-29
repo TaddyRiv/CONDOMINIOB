@@ -14,7 +14,6 @@ from app.views.apartamento import ApartamentoListView
 from app.views.residente_usuario import ResidenteListView
 from app.views.servicio import ServicioViewSet
 from app.views.cargo import CargoViewSet
-from app.views.pago import PagoViewSet
 from app.views.vehiculo import VehiculoViewSet
 from app.views.visita import VisitaViewSet
 from app.views.auth_me import MeView
@@ -23,7 +22,7 @@ from app.views.reserva import ReservaViewSet
 from app.views.area_comun import AreaComunViewSet
 from app.views.detalle_reserva import DetalleReservaViewSet
 from app.views.pago import PagoViewSet
-from app.views.reconocimiento_ia import ReconocerIAView
+
 from app.views.rekognition_view import VerificarAccesoView, RegistrarRostroUsuario
 from app.views.rekognition_view import SincronizarUsuariosView
 from app.views.rekognition_view import ListarCamarasView
