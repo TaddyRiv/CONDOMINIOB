@@ -38,7 +38,7 @@ class VerificarAccesoView(APIView):
 
             # 3️⃣ Guardar IntentoAcceso
             intento = IntentoAcceso.objects.create(
-    reconocimiento=reconocimiento,
+            reconocimiento=reconocimiento,
     usuario=usuario if usuario else None,
     punto_acceso=camara.punto_acceso,
     resultado="ACEPTADO" if usuario else "DENEGADO",
@@ -53,25 +53,35 @@ class VerificarAccesoView(APIView):
 )
 
             # 5️⃣ Respuesta al cliente
-            if usuario:
-                return Response({
-                    "mensaje": "Acceso permitido",
-                    "usuario": {
-                        "id": usuario.id,
-                        "nombre": usuario.nombre,
-                        "email": usuario.email,
-                    },
-                    "similaridad": similarity,
-                    "camara": camara.nombre,
-                    "tipo": tipo
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "mensaje": "Acceso denegado",
-                    "similaridad": similarity or 0,
-                    "camara": camara.nombre,
-                    "tipo": tipo
-                }, status=status.HTTP_403_FORBIDDEN)
+        if usuario and similarity and similarity >= 75:
+         return Response({
+        "mensaje": "Acceso permitido",
+        "usuario": {
+            "id": usuario.id,
+            "nombre": usuario.nombre,
+            "email": usuario.email,
+        },
+        "similaridad": similarity,
+        "camara": camara.nombre,
+        "tipo": tipo
+    }, status=status.HTTP_200_OK)
+
+        elif similarity and similarity >= 75:
+         return Response({
+        "mensaje": "Acceso permitido (sin usuario en BD)",
+        "similaridad": similarity,
+        "camara": camara.nombre,
+        "tipo": tipo
+    }, status=status.HTTP_200_OK)
+
+        else:
+         return Response({
+        "mensaje": "Acceso denegado",
+        "similaridad": similarity or 0,
+        "camara": camara.nombre,
+        "tipo": tipo
+    }, status=status.HTTP_403_FORBIDDEN)
+
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
