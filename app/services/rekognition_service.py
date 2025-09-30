@@ -44,6 +44,7 @@ def registrar_usuario_en_rekognition(usuario: Usuario):
 def verificar_usuario_por_foto(base64_image: str):
     """
     Compara una imagen con la colección y devuelve el usuario si hay coincidencia.
+    Busca usando ExternalImageId (usuario.id), no solo FaceId.
     """
     image_bytes = base64.b64decode(base64_image.split(",")[-1])
 
@@ -58,12 +59,14 @@ def verificar_usuario_por_foto(base64_image: str):
     if not matches:
         return None, None
 
-    face = matches[0]["Face"]
-    face_id = face["FaceId"]
     similarity = matches[0]["Similarity"]
+    external_id = matches[0]["Face"].get("ExternalImageId")
+
+    if not external_id:
+        return None, similarity
 
     try:
-        usuario = Usuario.objects.get(aws_face_id=face_id)
+        usuario = Usuario.objects.get(pk=external_id)
         return usuario, similarity
     except Usuario.DoesNotExist:
         return None, similarity
