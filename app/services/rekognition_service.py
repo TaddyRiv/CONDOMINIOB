@@ -44,7 +44,7 @@ def registrar_usuario_en_rekognition(usuario: Usuario):
 def verificar_usuario_por_foto(base64_image: str):
     """
     Compara una imagen con la colección y devuelve el usuario si hay coincidencia.
-    Busca usando ExternalImageId (usuario.id), no solo FaceId.
+    Busca tanto por ExternalImageId como por FaceId.
     """
     image_bytes = base64.b64decode(base64_image.split(",")[-1])
 
@@ -60,16 +60,28 @@ def verificar_usuario_por_foto(base64_image: str):
         return None, None
 
     similarity = matches[0]["Similarity"]
-    external_id = matches[0]["Face"].get("ExternalImageId")
+    face = matches[0]["Face"]
 
-    if not external_id:
-        return None, similarity
+    external_id = face.get("ExternalImageId")
+    face_id = face.get("FaceId")
 
-    try:
-        usuario = Usuario.objects.get(pk=external_id)
-        return usuario, similarity
-    except Usuario.DoesNotExist:
-        return None, similarity
+    # Intentar con ExternalImageId
+    if external_id:
+        try:
+            usuario = Usuario.objects.get(pk=external_id)
+            return usuario, similarity
+        except Usuario.DoesNotExist:
+            pass
+
+    # Intentar con aws_face_id
+    if face_id:
+        try:
+            usuario = Usuario.objects.get(aws_face_id=face_id)
+            return usuario, similarity
+        except Usuario.DoesNotExist:
+            pass
+
+    return None, similarity
 
 def detectar_placa(base64_image: str):
     """
