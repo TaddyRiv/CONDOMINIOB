@@ -3,6 +3,9 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Group
 from app.models.usuario import Usuario
 from app.services.rekognition_service import registrar_usuario_en_rekognition
+from django.db.models.signals import post_save
+
+
 @receiver(post_migrate)
 def crear_grupos_basicos(sender, **kwargs):
     # Evita ejecutarse en apps ajenas
@@ -11,16 +14,17 @@ def crear_grupos_basicos(sender, **kwargs):
     for nombre in ["admin", "empleado", "residente"]:
         Group.objects.get_or_create(name=nombre)
 
-def registrar_usuario_en_aws(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Usuario)
+def registrar_rostro_automatico(sender, instance, created, **kwargs):
     """
-    Cada vez que se cree un Usuario con foto,
-    se enviará automáticamente a AWS Rekognition.
+    Cuando se crea o actualiza un usuario con foto, se registra en AWS Rekognition.
     """
-    if created and instance.foto:
+    if instance.foto and not instance.aws_face_id:
         try:
             face_id = registrar_usuario_en_rekognition(instance)
-            print(f"[AWS] Usuario {instance.id} registrado en Rekognition con FaceId: {face_id}")
+            if face_id:
+                instance.aws_face_id = face_id
+                instance.save(update_fields=["aws_face_id"])
+                print(f"✅ Usuario {instance.email} registrado en Rekognition con face_id {face_id}")
         except Exception as e:
-            print(f"[AWS ERROR] No se pudo registrar usuario {instance.id}: {e}")
-
-            #noel se la come
+            print(f"⚠️ Error registrando rostro automáticamente para {instance.email}: {e}")

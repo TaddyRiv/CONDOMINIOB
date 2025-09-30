@@ -3,6 +3,7 @@ from app.models.usuario import Usuario
 from app.models.vehiculo import Vehiculo
 
 
+
 class PuntoAcceso(models.Model):
     nombre = models.CharField(max_length=100)
     ubicacion = models.CharField(max_length=200, blank=True, null=True)
