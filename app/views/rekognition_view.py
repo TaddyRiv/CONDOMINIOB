@@ -7,6 +7,7 @@ from app.services.rekognition_service import registrar_usuario_en_rekognition
 from app.models.usuario import Usuario
 from app.models.acceso import Camara, Reconocimiento, IntentoAcceso, EntradaSalida
 from app.services.rekognition_service import verificar_placa_en_bd
+from app.views import usuario
 
 class VerificarAccesoView(APIView):
     """
@@ -88,6 +89,8 @@ class RegistrarRostroUsuario(APIView):
         face_id = registrar_usuario_en_rekognition(usuario)
 
         if face_id:
+            usuario.aws_face_id = face_id
+            usuario.save(update_fields=["aws_face_id"])
             return Response({
                 "mensaje": "Usuario registrado en Rekognition",
                 "usuario_id": usuario.id,
@@ -113,6 +116,8 @@ class SincronizarUsuariosView(APIView):
             try:
                 face_id = registrar_usuario_en_rekognition(usuario)
                 if face_id:
+                    usuario.aws_face_id = face_id
+                    usuario.save(update_fields=["aws_face_id"])
                     procesados.append({
                         "id": usuario.id,
                         "email": usuario.email,
