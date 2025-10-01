@@ -1,0 +1,32 @@
+# Entorno virtual
+venv/
+.venv/
+
+# Variables de entorno
+.env
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Migraciones (excepto __init__.py)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Archivos de base de datos local
+db.sqlite3
+
+# Archivos estáticos y de medios
+staticfiles/
+media/
+
+# Configuración del editor/IDE
+.vscode/
+.idea/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+requirements.txt

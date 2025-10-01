@@ -6,7 +6,11 @@ class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not identifier:
             raise self.fail("no_active_account")
         attrs["username"] = identifier  # SimpleJWT espera 'username'
-        return super().validate(attrs)
+
+        data = super().validate(attrs)
+        # 👇 añadimos el rol al response
+        data["rol"] = self.user.rol
+        return data
 
     @classmethod
     def get_token(cls, user):

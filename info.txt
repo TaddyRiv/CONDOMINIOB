@@ -8,3 +8,80 @@ python seed.py
 
 correr servidor
 python manage.py runserver
+
+actualizar requerimientos
+pip freeze > requirements.txt
+
+instalar requerimientos
+pip install -r requirements.txt
+
+seed
+python manage.py seed_condominio
+python manage.py seed_cargos_pagos
+python manage.py seed_visitas
+python scripts/test_rekognition.py
+
+
+##noel
+instalacion de django para correr un proyecto en local
+
+//istalamos versiones de python
+py -3.11 -m pip install --upgrade pip
+
+//instalamos dependencias de python
+py -3.11 -m venv .venv
+
+//Activamos el entorno virtual de python
+.venv\Scripts\activate
+
+sirve para actualizar el pip
+python.exe -m pip install --upgrade pip
+
+Instalacionde  dependencias  librerias y paquetes
+pip install -r requirements.txt
+
+// actualizamos pip (si no lo tenemos)
+python -m pip install --upgrade pip 
+
+Si no tengo isntalado la dependecia de pillou
+pip install Pillow
+
+// para crear las migraciones de la base de datos
+python manage.py makemigrations app
+
+// para aplicar en la base de datos
+python manage.py migrate
+
+// correr seeder inicial
+python seed.py
+
+// correr servidor
+python manage.py runserver
+
+IMPORTANTE PARA QUE NO SALGA ERROR AL MOMENTO DE DESASRROLLAR
+
+FROM django=DB IMPORT MODEL 
+>select interprete
+
+
+DB_NAME=condominio
+DB_USER=postgres
+DB_PASSWORD=(contraseña)
+DB_HOST=127.0.0.1
+DB_PORT=5432
+
+crear un archivo
+.env
+
+
+
+
+
+
+
+BASE DE DATOS ONLINE CON NEON PARA HACER PRUEBAS 
+# DB_NAME=neondb
+# DB_USER=neondb_owner
+# DB_PASSWORD=npg_Of5U1rhXoqJY
+# DB_HOST=ep-proud-pine-adzcjqit-pooler.c-2.us-east-1.aws.neon.tech
+# DB_PORT=5432
