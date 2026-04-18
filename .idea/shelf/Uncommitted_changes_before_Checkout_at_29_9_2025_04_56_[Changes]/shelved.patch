@@ -1,0 +1,110 @@
+Index: app/signals.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from django.db.models.signals import post_migrate\r\nfrom django.dispatch import receiver\r\nfrom django.contrib.auth.models import Group\r\n\r\n@receiver(post_migrate)\r\ndef crear_grupos_basicos(sender, **kwargs):\r\n    # Evita ejecutarse en apps ajenas\r\n    if sender.name != \"app\":\r\n        return\r\n    for nombre in [\"admin\", \"empleado\", \"residente\"]:\r\n        Group.objects.get_or_create(name=nombre)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/signals.py b/app/signals.py
+--- a/app/signals.py	(revision 59993d7dcd7245936019bd4947a5460b795a6b7c)
++++ b/app/signals.py	(date 1759135250147)
+@@ -2,6 +2,7 @@
+ from django.dispatch import receiver
+ from django.contrib.auth.models import Group
+ 
++
+ @receiver(post_migrate)
+ def crear_grupos_basicos(sender, **kwargs):
+     # Evita ejecutarse en apps ajenas
+@@ -9,3 +10,15 @@
+         return
+     for nombre in ["admin", "empleado", "residente"]:
+         Group.objects.get_or_create(name=nombre)
++
++def registrar_usuario_en_aws(sender, instance, created, **kwargs):
++    """
++    Cada vez que se cree un Usuario con foto,
++    se enviará automáticamente a AWS Rekognition.
++    """
++    if created and instance.foto:
++        try:
++            face_id = registrar_usuario_en_rekognition(instance)
++            print(f"[AWS] Usuario {instance.id} registrado en Rekognition con FaceId: {face_id}")
++        except Exception as e:
++            print(f"[AWS ERROR] No se pudo registrar usuario {instance.id}: {e}")
+Index: app/services/rekognition_service.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/services/rekognition_service.py b/app/services/rekognition_service.py
+new file mode 100644
+--- /dev/null	(date 1759134800727)
++++ b/app/services/rekognition_service.py	(date 1759134800727)
+@@ -0,0 +1,66 @@
++import base64
++import boto3
++from django.conf import settings
++from app.models.usuario import Usuario
++
++rekognition = boto3.client(
++    "rekognition",
++    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
++    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
++    region_name=settings.AWS_REGION_NAME,
++)
++
++# 🔹 Usa la colección real de AWS
++COLLECTION_ID = "usuarios-condominio"
++
++def registrar_usuario_en_rekognition(usuario: Usuario):
++    """
++    Envía la foto (base64) de un Usuario a AWS Rekognition y guarda el FaceId.
++    """
++    if not usuario.foto:
++        return None
++
++    # ⚠️ si tu foto viene con "data:image/jpeg;base64,..." cortamos la cabecera
++    image_bytes = base64.b64decode(usuario.foto.split(",")[-1])
++
++    response = rekognition.index_faces(
++        CollectionId=COLLECTION_ID,
++        Image={"Bytes": image_bytes},
++        ExternalImageId=str(usuario.id),
++        DetectionAttributes=["DEFAULT"],
++    )
++
++    if response.get("FaceRecords"):
++        face_id = response["FaceRecords"][0]["Face"]["FaceId"]
++        usuario.aws_face_id = face_id
++        usuario.save(update_fields=["aws_face_id"])
++        return face_id
++    return None
++
++
++def verificar_usuario_por_foto(base64_image: str):
++    """
++    Compara una imagen con la colección y devuelve el usuario si hay coincidencia.
++    """
++    image_bytes = base64.b64decode(base64_image.split(",")[-1])
++
++    response = rekognition.search_faces_by_image(
++        CollectionId=COLLECTION_ID,
++        Image={"Bytes": image_bytes},
++        MaxFaces=1,
++        FaceMatchThreshold=85
++    )
++
++    matches = response.get("FaceMatches", [])
++    if not matches:
++        return None, None
++
++    face = matches[0]["Face"]
++    face_id = face["FaceId"]
++    similarity = matches[0]["Similarity"]
++
++    try:
++        usuario = Usuario.objects.get(aws_face_id=face_id)
++        return usuario, similarity
++    except Usuario.DoesNotExist:
++        return None, similarity

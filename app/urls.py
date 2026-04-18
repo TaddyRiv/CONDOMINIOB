@@ -24,9 +24,18 @@ from app.views.usuario import UsuarioViewSet
 from app.views.reserva import ReservaViewSet
 from app.views.area_comun import AreaComunViewSet
 from app.views.detalle_reserva import DetalleReservaViewSet
+<<<<<<< Updated upstream
 
 from app.views.avisos import AvisoViewSet
 
+=======
+from app.views.pago import PagoViewSet
+from app.views.reconocimiento_ia import ReconocerIAView
+from app.views.rekognition_view import VerificarAccesoView, RegistrarRostroUsuario
+from app.views.rekognition_view import SincronizarUsuariosView
+from app.views.rekognition_view import ListarCamarasView
+from app.views.entrada_salida import EntradaSalidaViewSet
+>>>>>>> Stashed changes
 
 urlpatterns = [
 
@@ -70,6 +79,16 @@ urlpatterns = [
     path("pagos/<int:pk>/", PagoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name="pago-detail"),
     path("pagos/<int:pk>/aprobar/", PagoViewSet.as_view({"post": "aprobar"}), name="pago-aprobar"),
     path("pagos/<int:pk>/rechazar/", PagoViewSet.as_view({"post": "rechazar"}), name="pago-rechazar"),
+<<<<<<< Updated upstream
+=======
+    #url de la camara
+    path("rekognition/verificar-acceso/", VerificarAccesoView.as_view(), name="rekognition-verificar-acceso"),
+    path("rekognition/registrar-rostro/<int:usuario_id>/", RegistrarRostroUsuario.as_view(), name="rekognition-registrar-rostro"),
+    path("rekognition/verificar/", VerificarAccesoView.as_view(), name="rekognition-verificar"),
+    path("rekognition/sincronizar-usuarios/", SincronizarUsuariosView.as_view(), name="rekognition-sincronizar"),
+    path("rekognition/camaras/", ListarCamarasView.as_view(), name="rekognition-camaras"),
+    path("entradas-salidas/", EntradaSalidaViewSet.as_view({'get': 'list'}), name="entradas-salidas-list"),
+>>>>>>> Stashed changes
 
     # Avisos: listar/crear y detalle/actualizar/eliminar
     path("avisos/",AvisoViewSet.as_view({"get": "list", "post": "create"}),name="aviso-list",),
